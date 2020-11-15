@@ -2,7 +2,7 @@ use rand::{thread_rng, Rng};
 use std::time::{Instant};
 
 fn main() {
-    let size = 750000; // 100000;
+    let size = 100000; // 100000;
     let v = generate_random_array(size, 0, size);
 
     let mut u = v.clone();
@@ -17,6 +17,7 @@ fn main() {
     println!("Elapsed time for quicksort was {:?}.", before_quicksort.elapsed());
     // println!("{:?}", &w);
 
+/*
     let before_merged = Instant::now();
     let merged_v = merge_sort(&v);
     println!("Elapsed time for mergesort was {:?}.", before_merged.elapsed());
@@ -26,6 +27,7 @@ fn main() {
     println!("Was insertion sort in order?: {:?}", is_sorted(&u));
     println!("Was quicksort in order?: {:?}", is_sorted(&w));
     println!("Was mergesort in order?: {:?}", is_sorted(&merged_v));
+*/
 }
 
 // Insertion sort is "in place", so we modify the input array v
@@ -72,7 +74,7 @@ fn insertion_sort<T: PartialOrd + std::fmt::Debug>(v: &mut [T]) {
 // and slices of the array for debugging purposes with `{:?}`. I
 // don't do that here, but you could add some print statements if,
 // for example, you want to watch the sorting happen.
-fn quicksort<T: PartialOrd + std::fmt::Debug>(v: &mut [T]) {
+fn quicksort<T: PartialOrd + std::fmt::Debug>(mut v: &mut [T]) {
     // Quicksort is a recursive solution where we select a pivot
     // value (usually just the first element) and split (in place)
     // the array into two sections: The "front" is all < the pivot,
@@ -96,17 +98,34 @@ fn quicksort<T: PartialOrd + std::fmt::Debug>(v: &mut [T]) {
 
     // Now choose a pivot and do the organizing.
     
-    // ...
+    // Implement a divide function that splits the array
+    // by the pivot
+    let pivot = divide(&mut v);//Should take the whole subarray and return a pivot
 
-    let smaller = 99999999; // Totally wrong – you should fix this.
+    //let smaller = 99999999; // Totally wrong – you should fix this.
 
     // Sort all the items < pivot
-    quicksort(&mut v[0..smaller]);
+    quicksort(&mut v[0..pivot]);
     // Sort all the items ≥ pivot, *not* including the
     // pivot value itself. If we don't include the +1
     // here you can end up in infinite recursions.
-    quicksort(&mut v[smaller+1..length]);
+    quicksort(&mut v[pivot+1..length]);
 }
+
+//Partition function for quicksort
+fn divide<T: PartialOrd + std::fmt::Debug>(v: &mut [T]) -> usize{
+   let mut q = 0; //This index will eventually become the pivot index
+   let pivot = v.len()-1; //This is a somewhat arbitrary choice for a pivot, but it works
+   for j in 0..v.len()-1 {
+	if v[j] <= v[pivot] {
+	  v.swap(j,q);
+	  q+= 1;
+	}
+   }
+   v.swap(q, pivot);
+   return q;
+}
+
 
 // Mergesort can't be done "in place", so it needs to return a _new_
 // Vec<T> of the sorted elements. The array elements need to have
